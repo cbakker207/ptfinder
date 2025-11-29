@@ -6,6 +6,8 @@ TRUNCATE TABLE PeerTeachers;
 TRUNCATE TABLE Courses;
 TRUNCATE TABLE PeerTeacherCourses;
 TRUNCATE TABLE OfficeHours;
+TRUNCATE TABLE Users;
+TRUNCATE TABLE PTRatings;
 SET FOREIGN_KEY_CHECKS = 1;
 
 
@@ -330,3 +332,16 @@ INSERT INTO OfficeHours (pt_id, day_of_week, start_time, end_time, location) VAL
 -- PT 50
 (50, 'Monday', '12:00', '14:00', 'EABB Room 101'),
 (50, 'Friday', '15:00', '17:00', 'EABB Room 101');
+
+INSERT INTO Users (email) VALUES
+('test1@tamu.edu'),
+('student2@tamu.edu'),
+('example@tamu.edu');
+
+INSERT INTO PTRatings (user_id, pt_id, rating) VALUES
+(1, 1, 5),
+(1, 2, 4),
+(2, 1, 4),
+(2, 3, 5),
+(3, 5, 5),
+(3, 10, 4);

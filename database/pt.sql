@@ -34,3 +34,18 @@ CREATE TABLE IF NOT EXISTS OfficeHours (
     location VARCHAR(100),
     FOREIGN KEY (pt_id) REFERENCES PeerTeachers(pt_id) ON DELETE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS Users (
+    user_id INT PRIMARY KEY AUTO_INCREMENT,
+    email VARCHAR(100) UNIQUE NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS PTRatings (
+    rating_id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    pt_id INT NOT NULL,
+    rating INT NOT NULL CHECK (rating BETWEEN 1 AND 5),
+    UNIQUE(user_id, pt_id), -- prevents duplicate ratings
+    FOREIGN KEY (user_id) REFERENCES Users(user_id),
+    FOREIGN KEY (pt_id) REFERENCES PeerTeachers(pt_id)
+);
