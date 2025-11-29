@@ -9,7 +9,7 @@ CORS(app)
 db_config = {
     "host": "localhost",
     "user": "root",
-    "password": "@06s21p04Aamil062104",
+    "password": "", #INSERT MYSQL PWD
     "database": "peer_teacher"
 }
 
