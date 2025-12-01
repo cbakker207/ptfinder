@@ -2,6 +2,7 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 import mysql.connector
 import datetime
+import re
 
 app = Flask(__name__)
 CORS(app)
@@ -28,23 +29,37 @@ def convert_time(t):
 # -----------------------------------------------------------
 @app.post("/login")
 def login():
-    email = request.json.get("email")
+    data = request.json
+    email = data.get("email")
 
+    # Basic valid email regex
+    pattern = r"^[^@\s]+@[^@\s]+\.[^@\s]+$"
+    if not re.match(pattern, email):
+        return jsonify({"error": "Invalid email format"}), 400
+
+    # OPTIONAL: restrict to TAMU emails only
+    if not email.endswith("@tamu.edu"):
+        return jsonify({"error": "Only TAMU emails allowed"}), 400
+    
     conn = get_conn()
     cur = conn.cursor(dictionary=True)
 
+    # Check if email exists
     cur.execute("SELECT user_id FROM Users WHERE email = %s", (email,))
-    row = cur.fetchone()
+    user = cur.fetchone()
 
-    if row:
-        return jsonify({"user_id": row["user_id"]})
+    # If not exists → create account
+    if not user:
+        cur.execute("INSERT INTO Users (email) VALUES (%s)", (email,))
+        conn.commit()
+        user_id = cur.lastrowid
+    else:
+        user_id = user["user_id"]
 
-    cur.execute("INSERT INTO Users (email) VALUES (%s)", (email,))
-    conn.commit()
+    cur.close()
+    conn.close()
 
-    return jsonify({"user_id": cur.lastrowid})
-
-
+    return jsonify({"user_id": user_id})
 # -----------------------------------------------------------
 # CHECK IF USER HAS RATED A PT
 # -----------------------------------------------------------

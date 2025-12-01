@@ -39,6 +39,20 @@ export default function App() {
     const email = prompt("Enter your email:");
     if (!email) return;
 
+    // Regex: must be a valid email
+    const validEmailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!validEmailRegex.test(email)) {
+      alert("Please enter a valid email address.");
+      return;
+    }
+
+    // OPTIONAL: Only allow TAMU emails
+    if (!email.endsWith("@tamu.edu")) {
+      alert("Only TAMU emails are allowed.");
+      return;
+    }
+
     const res = await fetch("http://localhost:5001/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -55,12 +69,15 @@ export default function App() {
     alert("Login successful!");
   };
 
+
   const logout = () => {
     setUserId(null);
     setUserEmail(null);
     localStorage.removeItem("userId");
     localStorage.removeItem("userEmail");
-    alert("Logged out!");
+
+    // Force UI refresh (OPTIONAL but recommended)
+    window.location.reload();
   };
 
   // LOAD PTs

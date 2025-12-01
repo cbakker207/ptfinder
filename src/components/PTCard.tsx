@@ -12,12 +12,18 @@ export function PTCard({ pt, userId }: PTCardProps) {
   const [hasRated, setHasRated] = useState(false);
 
   useEffect(() => {
-    if (!userId) return;
+    if (!userId) {
+      setHasRated(false);   // RESET on logout
+      return;
+    }
 
     fetch(`http://localhost:5001/user-rating?userId=${userId}&ptId=${pt.pt_id}`)
       .then((res) => res.json())
-      .then((data) => setHasRated(data.hasRated));
+      .then((data) => {
+        setHasRated(data.hasRated);
+      });
   }, [userId, pt.pt_id]);
+
 
   const handleRating = async (value: number) => {
     if (!userId) {
