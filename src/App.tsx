@@ -137,22 +137,28 @@ export default function App() {
       const matchesSearch =
         searchQuery === "" ||
         pt.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        pt.classes.some((c) => c.toLowerCase().includes(searchQuery.toLowerCase()));
-
-      const matchesDay =
-        selectedDay === "All Days" ||
-        pt.officeHours.some(
-          (oh) => oh.day.trim().toLowerCase() === selectedDay.trim().toLowerCase()
+        pt.classes.some((c) =>
+          c.toLowerCase().includes(searchQuery.toLowerCase())
         );
 
-      const matchesTime =
-        !startTime ||
-        !endTime ||
-        pt.officeHours.some((oh) => timeRangesOverlap(oh.time, startTime, endTime));
+      // NEW: Combined day + time logic inside the SAME office hour
+      const matchesDayAndTime = pt.officeHours.some((oh) => {
+        const dayMatches =
+          selectedDay === "All Days" ||
+          oh.day.trim().toLowerCase() === selectedDay.trim().toLowerCase();
 
-      return matchesSearch && matchesDay && matchesTime;
+        const timeMatches =
+          !startTime ||
+          !endTime ||
+          timeRangesOverlap(oh.time, startTime, endTime);
+
+        return dayMatches && timeMatches; // BOTH must match here
+      });
+
+      return matchesSearch && matchesDayAndTime;
     });
   }, [pts, searchQuery, selectedDay, startTime, endTime]);
+
 
   return (
     <div className="min-h-screen bg-gray-50">
